@@ -1,0 +1,105 @@
+<body style="margin:0;pading:0">
+<canvas id="visible_canvas"></canvas>
+<script src="./js/update.js"></script>
+<script>
+
+"use strict"
+
+onload = function ()
+{
+	window.W = visible_canvas.width = innerWidth;
+	window.H = visible_canvas.height = innerHeight;
+	window.hW = W >> 1;
+	window.hH = H >> 1;
+	window.visible_ctx = visible_canvas.getContext("2d");
+	window.buffer_canvas = visible_canvas.cloneNode();
+	window.buffer_ctx = buffer_canvas.getContext("2d");
+	window.player = {
+		x: hW,
+		y: hH,
+		dir: 0,
+		speed: 10,
+		collider_radius: 20,
+		pulse_timer: 0,
+		can_pulse: true,
+		is_stop: false,
+		side_len: 32,
+		upgrades: null
+	}
+	window.mouse = {
+		x: 0,
+		y: 0,
+		is_down: false
+	}
+
+	init_events();
+
+	render_loop();
+}
+
+function init_events ()
+{
+
+	// ------------ mouse ------------ //
+
+	onmousemove = function (e)
+	{
+		mouse.x = e.clientX;
+		mouse.y = e.clientY;
+	}
+
+	onmousedown = function (e)
+	{
+		mouse.is_down = true;
+	}
+
+	onmouseup = function (e)
+	{
+		mouse.is_down = false;
+	}
+
+	// ------------ keyboard ------------ //
+}
+
+function wait_logged_in ()
+{
+	if (!is_logged)
+	{
+		return setTimeout(wait_logged_in, 200); // wait
+	}
+}
+
+function render_loop ()
+{
+	requestAnimationFrame(render_loop);
+
+	// ---- update ---- //
+
+	if (Math.pow(mouse.x - player.x, 2) + Math.pow(mouse.y - player.y, 2) < player.side_len * player.side_len)
+	{
+		if (!player.is_stop)
+		{
+			player.is_stop = true;
+		}
+	}
+	else if (player.is_stop)
+	{
+		player.is_stop = false;
+	}
+
+	player.dir = Math.atan2(mouse.y - hH, mouse.x - hW);
+	//player.dir = Math.atan2(mouse.y - player.y, mouse.x - player.x),
+
+	// ---- render ---- //
+
+	buffer_ctx.fillStyle = "#000";
+	buffer_ctx.fillRect(0, 0, W, H);
+
+	buffer_ctx.fillStyle = mouse.is_down ? "#0f0" : "#fff";
+	buffer_ctx.fillRect(player.x - player.side_len * 0.5, player.y - player.side_len * 0.5, player.side_len, player.side_len);
+
+	visible_ctx.drawImage(buffer_canvas, 0, 0);
+}
+
+</script>
+</body>
