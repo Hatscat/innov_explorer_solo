@@ -1,8 +1,8 @@
 "use strict"
 
-function update (game, t)
+function update (t)
 {
-	game.deltatime = game.time - t;
+	game.deltatime = t - game.time;
 	game.time = t;
 
 	if (!game.player.is_stopped)
@@ -19,6 +19,4 @@ function update (game, t)
 			game.player.y = game.player.get_next_y();	
 		}
 	}
-
-	requestAnimationFrame(update.bind(this, game));
 }

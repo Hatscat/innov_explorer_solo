@@ -4,7 +4,7 @@ addEventListener("load", init, false);
 
 function init ()
 {
-	var game = {
+	window.game = {
 		W: visible_canvas.width = innerWidth,
 		H: visible_canvas.height = innerHeight,
 		visible_ctx: visible_canvas.getContext("2d"),
@@ -22,14 +22,21 @@ function init ()
 	game.hH =  game.H >> 1;
 	game.buffer_canvas = visible_canvas.cloneNode();
 	game.buffer_ctx = game.buffer_canvas.getContext("2d");
-	game.player = new Player(game, 0, 0);
+	game.player = new Player(100, 100);
 
-	init_events(game);
-	update(game, 0);
-	draw(game);
+	init_events();
+
+	requestAnimationFrame(game_loop);
 }
 
-function init_events (game)
+function game_loop (t)
+{
+	requestAnimationFrame(game_loop);
+	update(t);
+	draw();
+}
+
+function init_events ()
 {
 	// ------------ mouse ------------ //
 

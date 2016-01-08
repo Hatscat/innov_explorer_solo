@@ -1,9 +1,7 @@
 "use strict"
 
-function draw (game)
+function draw ()
 {
-	requestAnimationFrame(draw.bind(this, game));
-
 	// ---- BG ---- //
 
 	game.buffer_ctx.fillStyle = "#000";
