@@ -6,7 +6,7 @@ function Player (x, y)
 	
 	this.default_speed = 0.2;
 	this.pulse_speed = 1;
-	this.pulse_duration = 400; // ms
+	this.pulse_duration = 500; // ms
 	this.collider_radius = 20;
 
 	// ---- props ---- //
@@ -75,19 +75,27 @@ Player.prototype.check_distances = function (x, y)
 		if (d < game.view_dist_sqrt) // visible
 		{
 			game.visible_obj[game.visible_obj.length] = game.planets[i];
+			game.planets[i].screen_x = game.hW + (game.planets[i].x - x);
+			game.planets[i].screen_y = game.hH + (game.planets[i].y - y);
 
 			if (d < Math.pow(this.collider_radius + game.planets[i].collider_radius, 2)) // collision
 			{
 				this.is_collided = true;
 				this.force_inertia_timer = game.force_inertia_duration;
+				this.pulse_timer = 0;
 
 				var angle = Math.atan2(y - game.planets[i].y, x - game.planets[i].x);
-				var str = this.speed * 2.1;
+				var str = this.speed * 1.1;
 
 				this.force_x = Math.cos(angle) * str;
 				this.force_y = Math.sin(angle) * str;
 			}
 		}
+	}
+
+	for (var i = game.meteors.length; i--;)
+	{
+
 	}
 }
 

@@ -19,8 +19,8 @@ function init ()
 		world_edges: {
 			//x: 0,
 			//y: 0,
-			w: innerWidth, // 32000,
-			h: innerHeight // 16000
+			w: 32000,
+			h: 16000
 		},
 		force_inertia_duration: 500, // ms
 		deltatime: 1,
@@ -32,9 +32,9 @@ function init ()
 	game.view_dist_sqrt = game.hW * game.hW + game.hH * game.hH;
 	game.buffer_canvas = visible_canvas.cloneNode();
 	game.buffer_ctx = game.buffer_canvas.getContext("2d");
-	game.player = new Player(game.hW, game.hH);
+	game.player = new Player(game.world_edges.w >> 1, game.world_edges.h >> 1);
 
-	init_planets(16);
+	init_planets(512);
 	
 	init_events();
 
@@ -46,7 +46,7 @@ function init_planets (n)
 	for (var i = n; i--;)
 	{
 		var c = document.createElement("canvas");
-		c.width = c.height = Math.floor(64 + Math.random() * 128);
+		c.width = c.height = Math.floor(128 + Math.random() * 256);
 		var r = c.width >> 1;
 		var ctx = c.getContext("2d");
 		ctx.fillStyle = "#" + Math.floor(Math.random() * 0x1000).toString(16);

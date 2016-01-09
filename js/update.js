@@ -8,6 +8,9 @@ function update (t)
 	game.visible_obj = []; // reset pipeline
 
 	// ---- meteors ---- //
+	
+	// spawn
+	// update
 
 	// ---- player ---- //
 
@@ -22,7 +25,7 @@ function update (t)
 		
 		game.player.check_distances(next_x, next_y);
 
-		if (!game.player.is_collided && dist_xy_sqrt(game.player, game.mouse) > game.player.collider_radius_sqrt)
+		if (!game.player.is_collided)
 		{
 			game.player.x = next_x;
 			game.player.y = next_y;

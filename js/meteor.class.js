@@ -5,6 +5,8 @@ function Meteor (sprite, x, y, dir, speed, collider_radius)
 	this.sprite = sprite;
 	this.x = x;
 	this.y = y;
+	this.screen_x = 0;
+	this.screen_y = 0;
 	this.speed = speed;
 	this.dir = dir;
 	this.force_x = 0;
