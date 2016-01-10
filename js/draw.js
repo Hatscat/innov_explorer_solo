@@ -2,10 +2,32 @@
 
 function draw ()
 {
-	// ---- BG ---- //
+	// ---- parallax BG ---- //
 
 	game.buffer_ctx.fillStyle = "#000";
 	game.buffer_ctx.fillRect(0, 0, game.W, game.H);
+
+	var x = -game.player.x * 0.5 % game.bg.width;
+	var y = -game.player.y * 0.5 % game.bg.height;
+	var x_off = x + game.bg.width * sign(-x);
+	var y_off = y + game.bg.height * sign(-y);
+	var must_draw_x = x < 0 || x + game.bg.width > game.W;
+	
+	game.buffer_ctx.drawImage(game.bg, x, y);
+	
+	if (must_draw_x) // x
+	{
+		game.buffer_ctx.drawImage(game.bg, x_off, y);
+	}
+	if (y < 0 || y + game.bg.height > game.H) // y
+	{
+		game.buffer_ctx.drawImage(game.bg, x, y_off);
+
+		if (must_draw_x) // x + y
+		{
+			game.buffer_ctx.drawImage(game.bg, x_off, y_off);
+		}
+	}
 
 	// ---- visible stuff ---- //
 

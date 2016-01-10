@@ -33,12 +33,33 @@ function init ()
 	game.buffer_canvas = visible_canvas.cloneNode();
 	game.buffer_ctx = game.buffer_canvas.getContext("2d");
 	game.player = new Player(game.world_edges.w >> 1, game.world_edges.h >> 1);
+	game.bg = create_stars_bg(2048);
 
-	init_planets(512);
+	init_planets(128);
 	
 	init_events();
 
 	requestAnimationFrame(game_loop);
+}
+
+function create_stars_bg (stars_nb)
+{
+	var c = document.createElement("canvas");
+	c.width = game.W;
+	c.height = game.H;
+	var ctx = c.getContext("2d");
+	
+	for (var i = stars_nb; i--;)
+	{
+		var col = 9 + Math.floor(Math.random() * 7).toString(16);
+		var s = 1 + Math.floor(Math.random() * 4);
+		var hs = Math.ceil(s);
+
+		ctx.fillStyle = "#" + col + col + col;
+		ctx.fillRect(hs + (Math.random() * c.width - s), hs + (Math.random() * c.height - s), s, s); 
+	}
+	
+	return c;
 }
 
 function init_planets (n)
