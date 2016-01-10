@@ -5,8 +5,8 @@ function Player (x, y)
 	// ---- config ---- //
 	
 	this.default_speed = 0.2;
-	this.pulse_speed = 1.2;
-	this.pulse_duration = 600; // ms
+	this.pulse_speed = 1.4;
+	this.pulse_duration = 800; // ms
 	this.collider_radius = 20;
 
 	// ---- props ---- //
@@ -25,6 +25,30 @@ function Player (x, y)
 	this.is_collided = false;
 	this.upgrades = [];
 	this.distances = {};
+}
+
+Player.prototype.get_next_x = function ()
+{
+	var x = this.x + (Math.cos(this.dir) * this.speed + this.force_x) * game.deltatime;
+
+	if (x < 0 || x > game.world_edges.w)
+	{
+		console.log("x limit!", x);
+		return x + game.world_edges.w * sign(-x);
+	}
+	return x;
+}
+
+Player.prototype.get_next_y = function ()
+{
+	var y = this.y + (Math.sin(this.dir) * this.speed + this.force_y) * game.deltatime;
+
+	if (y < 0 || y > game.world_edges.h)
+	{
+		console.log("y limit!", y);
+		return y + game.world_edges.h * sign(-y);
+	}
+	return y;
 }
 
 Player.prototype.update_dir = function ()
@@ -78,7 +102,7 @@ Player.prototype.check_distances = function (x, y)
 			game.planets[i].screen_x = game.hW + (game.planets[i].x - x);
 			game.planets[i].screen_y = game.hH + (game.planets[i].y - y);
 
-			if (d < Math.pow(this.collider_radius + game.planets[i].collider_radius, 2)) // collision
+			if (d < Math.pow(this.collider_radius + game.planets[i].collider_radius, 2)) // collision, à optimiser
 			{
 				this.is_collided = true;
 				this.force_inertia_timer = game.force_inertia_duration;
@@ -106,15 +130,5 @@ Player.prototype.pulse = function ()
 		this.can_pulse = false;
 		this.pulse_timer = this.pulse_duration;
 	}
-}
-
-Player.prototype.get_next_x = function ()
-{
-	return this.x + (Math.cos(this.dir) * this.speed + this.force_x) * game.deltatime;
-}
-
-Player.prototype.get_next_y = function ()
-{
-	return this.y + (Math.sin(this.dir) * this.speed + this.force_y) * game.deltatime;
 }
 

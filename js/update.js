@@ -16,9 +16,13 @@ function update (t)
 
 	if (!game.player.is_stopped)
 	{
-		game.player.update_dir();
 		game.player.update_speed();
 		game.player.update_forces();
+		
+		if (game.player.pulse_timer == 0)
+		{
+			game.player.update_dir();
+		}
 
 		var next_x = game.player.get_next_x();
 		var next_y = game.player.get_next_y();

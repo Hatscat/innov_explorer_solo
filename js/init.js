@@ -22,14 +22,15 @@ function init ()
 			w: 32000,
 			h: 16000
 		},
-		force_inertia_duration: 500, // ms
+		larger_visible_radius: 512,
+		force_inertia_duration: 1000, // ms
 		deltatime: 1,
 		time: 0
 	};
 
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;
-	game.view_dist_sqrt = game.hW * game.hW + game.hH * game.hH;
+	game.view_dist_sqrt = game.hW * game.hW + game.hH * game.hH + game.larger_visible_radius * game.larger_visible_radius;
 	game.buffer_canvas = visible_canvas.cloneNode();
 	game.buffer_ctx = game.buffer_canvas.getContext("2d");
 	game.player = new Player(game.world_edges.w >> 1, game.world_edges.h >> 1);
@@ -37,7 +38,7 @@ function init ()
 	game.bg_speed_min = 0.4;
 	game.bg_speed_max = 0.6;
 
-	init_planets(128);
+	init_planets(1 << 8);
 	
 	init_events();
 
@@ -73,10 +74,10 @@ function init_planets (n)
 	for (var i = n; i--;)
 	{
 		var c = document.createElement("canvas");
-		c.width = c.height = Math.floor(128 + Math.random() * 256);
+		c.width = c.height = Math.floor(128 + Math.random() * (game.larger_visible_radius - 128));
 		var r = c.width >> 1;
 		var ctx = c.getContext("2d");
-		ctx.fillStyle = "#" + Math.floor(Math.random() * 0x1000).toString(16);
+		ctx.fillStyle = "#" + (0x222 | Math.random() * 0x1000).toString(16);
 		ctx.beginPath();
 		ctx.arc(r, r, r, 0, Math.PI*2);
 		ctx.fill();
