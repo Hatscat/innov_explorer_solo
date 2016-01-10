@@ -5,8 +5,8 @@ function Player (x, y)
 	// ---- config ---- //
 	
 	this.default_speed = 0.2;
-	this.pulse_speed = 1;
-	this.pulse_duration = 500; // ms
+	this.pulse_speed = 1.2;
+	this.pulse_duration = 600; // ms
 	this.collider_radius = 20;
 
 	// ---- props ---- //
