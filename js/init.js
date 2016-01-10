@@ -19,8 +19,8 @@ function init ()
 		world_edges: {
 			//x: 0,
 			//y: 0,
-			w: 32000,
-			h: 16000
+			w: 32000, // at least 3 * innerWidth
+			h: 16000 // at least 3 * innerHeight
 		},
 		larger_visible_radius: 512,
 		force_inertia_duration: 1000, // ms
@@ -82,7 +82,7 @@ function init_planets (n)
 		ctx.arc(r, r, r, 0, Math.PI*2);
 		ctx.fill();
 
-		game.planets[game.planets.length] = new Planet(c, Math.random()*game.world_edges.w, Math.random()*game.world_edges.h, r, c.width);
+		game.planets[game.planets.length] = new Planet(c, game.W + Math.random() * (game.world_edges.w - 2*game.W), game.H + Math.random() * (game.world_edges.h - 2*game.H), r, c.width);
 	}
 }
 
