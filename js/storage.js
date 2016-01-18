@@ -7,6 +7,8 @@ storage.init = function ()
 	var data = {
 		discovered_planets: [],
 		player_xp: 0,
+		player_speed_k: 1,
+		player_hp_k: 1,
 		player_upgrades: []
 	};
 

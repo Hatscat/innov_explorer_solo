@@ -18,6 +18,7 @@ function update (t)
 	{
 		game.player.update_speed();
 		game.player.update_forces();
+		game.player.update_hp();
 		
 		if (game.player.pulse_timer == 0)
 		{

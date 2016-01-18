@@ -39,6 +39,14 @@ function draw ()
 	game.buffer_ctx.arc(game.hW, game.hH, game.player.collider_radius, 0, Math.PI*2);
 	game.buffer_ctx.fill();
 
+
+	// ---- hp ---- //
+
+	game.buffer_ctx.fillStyle = "#000";
+	game.buffer_ctx.fillRect(game.hW >> 1, 0, game.hW, game.hH >> 3);
+	game.buffer_ctx.fillStyle = "#0f0";
+	game.buffer_ctx.fillRect(game.hW >> 1, 0, game.player.get_hp_ratio() * game.hW, game.hH >> 3);
+
 	game.visible_ctx.drawImage(game.buffer_canvas, 0, 0);
 }
 

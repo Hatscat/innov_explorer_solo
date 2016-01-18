@@ -7,6 +7,8 @@ function init ()
 	window.game = {
 		W: visible_canvas.width = innerWidth,
 		H: visible_canvas.height = innerHeight,
+		SPEED_CHOICE: 1,
+		RESIST_CHOICE: 2,
 		visible_ctx: visible_canvas.getContext("2d"),
 		visible_obj: [],
 		planets: [],
@@ -85,6 +87,12 @@ function UILevelUp (levelYoureOn)
 {
 	console.log("UILevelUp", levelYoureOn);
 	game.player.level_up(1);
+}
+
+function AnimYouDied ()
+{
+	console.log("you died");
+	game.player.init();
 }
 
 function init_planets (n)
