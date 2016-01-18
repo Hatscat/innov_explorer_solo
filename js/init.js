@@ -69,6 +69,14 @@ function create_stars_bgs (stars_nb_by_layers)
 	return bgs;
 }
 
+function unLockPopUp (planet)
+{
+	if (!localStorage.planets)
+		localStorage.planets = "";
+
+	console.log(JSON.stringify(planet))
+}
+
 function init_planets (n)
 {
 	for (var i = n; i--;)

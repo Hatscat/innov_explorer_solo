@@ -13,7 +13,7 @@ function Meteor (sprite, x, y, dir, speed, collider_radius)
 	this.force_y = 0;
 	this.force_inertia_timer = 0;
 	this.collider_radius = collider_radius;
-	this.collider_radius_sqrt = this.collider_radius * this.collider_radius;
+	this.collider_and_player_radius_sqrt = Math.pow(this.collider_radius + game.player.collider_radius, 2);
 	this.is_stop = false;
 }
 

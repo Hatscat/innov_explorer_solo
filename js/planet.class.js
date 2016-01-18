@@ -10,7 +10,7 @@ function Planet (sprite, x, y, collider_radius, trigger_radius)
 	this.discovered = false; // load localstorage
 	this.collider_radius = collider_radius;
 	this.trigger_radius = trigger_radius;
-	this.collider_radius_sqrt = this.collider_radius * this.collider_radius;
-	this.trigger_radius_sqrt = this.trigger_radius * this.trigger_radius;
+	this.collider_and_player_radius_sqrt = Math.pow(this.collider_radius + game.player.collider_radius, 2);
+	this.trigger_and_player_radius_sqrt = Math.pow(this.trigger_radius + game.player.collider_radius, 2);
 }
 

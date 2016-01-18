@@ -17,7 +17,6 @@ function Player (x, y)
 	this.speed = this.speed_min;
 	this.force_x = 0;
 	this.force_y = 0;
-	this.collider_radius_sqrt = this.collider_radius * this.collider_radius;
 	this.pulse_timer = 0;
 	this.force_inertia_timer = 0;
 	this.can_pulse = true;
@@ -102,17 +101,23 @@ Player.prototype.check_distances = function (x, y)
 			game.planets[i].screen_x = game.hW + (game.planets[i].x - x);
 			game.planets[i].screen_y = game.hH + (game.planets[i].y - y);
 
-			if (d < Math.pow(this.collider_radius + game.planets[i].collider_radius, 2)) // collision, à optimiser
+
+			if (d < game.planets[i].trigger_and_player_radius_sqrt)
 			{
-				this.is_collided = true;
-				this.force_inertia_timer = game.force_inertia_duration;
-				this.pulse_timer = 0;
+				unLockPopUp(game.planets[i]);
 
-				var angle = Math.atan2(y - game.planets[i].y, x - game.planets[i].x);
-				var str = this.speed * 1.1;
+				if (d < game.planets[i].collider_and_player_radius_sqrt)
+				{
+					this.is_collided = true;
+					this.force_inertia_timer = game.force_inertia_duration;
+					this.pulse_timer = 0;
 
-				this.force_x = Math.cos(angle) * str;
-				this.force_y = Math.sin(angle) * str;
+					var angle = Math.atan2(y - game.planets[i].y, x - game.planets[i].x);
+					var str = this.speed * 1.1;
+
+					this.force_x = Math.cos(angle) * str;
+					this.force_y = Math.sin(angle) * str;
+				}
 			}
 		}
 	}
