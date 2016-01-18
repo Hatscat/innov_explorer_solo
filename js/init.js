@@ -73,12 +73,18 @@ function create_stars_bgs (stars_nb_by_layers)
 
 function unLockPopUp (planet)
 {
-	console.log(planet.id);
+	console.log("unLockPopUp", planet.id);
 }
 
 function UIXpGain (amoutOfXpGained)
 {
-	console.log(amoutOfXpGained);
+	console.log("UIXpGain", amoutOfXpGained);
+}
+
+function UILevelUp (levelYoureOn)
+{
+	console.log("UILevelUp", levelYoureOn);
+	game.player.level_up(1);
 }
 
 function init_planets (n)

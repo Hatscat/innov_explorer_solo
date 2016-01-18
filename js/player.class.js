@@ -24,8 +24,8 @@ function Player (x, y)
 	this.can_pulse = true;
 	this.is_stopped = false;
 	this.is_collided = false;
-	this.xp = localStorage.innov_explorer.player_xp || 0;
-	this.upgrades = localStorage.innov_explorer.player_upgrades || [];
+	this.xp = storage.load("player_xp");
+	this.upgrades = storage.load("player_upgrades");
 }
 
 Player.prototype.check_level = function ()
@@ -36,6 +36,12 @@ Player.prototype.check_level = function ()
 Player.prototype.check_xp_needed = function (lvl)
 {
 	return ; // todo?
+}
+
+Player.prototype.level_up = function (upgrade_choice)
+{
+	this.upgrades[this.upgrades.length] = upgrade_choice;
+	storage.save(upgrade_choice, "player_upgrades");
 }
 
 Player.prototype.get_next_x = function ()
@@ -99,6 +105,25 @@ Player.prototype.update_forces = function ()
 	}
 }
 
+Player.prototype.gain_xp = function (amount)
+{
+	if (this.xp >= this.xp_max)
+	{
+		return;
+	}
+
+	this.xp = Math.min(this.xp + amount, this.xp_max);
+	storage.save(this.xp, "player_xp");
+	UIXpGain(amount);
+
+	var lvl = Math.floor(this.check_level());
+
+	if (this.upgrades.length < lvl)
+	{
+		UILevelUp(lvl);
+	}
+}
+
 Player.prototype.check_distances = function (x, y)
 {
 	var next_pos = { x: x, y: y };
@@ -120,14 +145,7 @@ Player.prototype.check_distances = function (x, y)
 					game.planets[i].discovered = true;
 					storage.save(game.planets[i].id, "discovered_planets");
 					unLockPopUp(game.planets[i]);
-					this.xp += game.planets[i].xp_value;
-					storage.save(this.xp, "player_xp");
-					UIXpGain(game.planets[i].xp_value);
-	
-					if (this.upgrades.length < Math.floor(this.check_level()))
-					{
-						console.log("level up!");
-					}
+					this.gain_xp(game.planets[i].xp_value);
 				}
 
 				if (d < game.planets[i].collider_and_player_radius_sqrt)
