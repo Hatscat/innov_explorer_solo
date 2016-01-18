@@ -4,8 +4,8 @@ function Player (x, y)
 {
 	// ---- config ---- //
 	
-	this.default_speed = 0.2;
-	this.pulse_speed = 1.4;
+	this.default_speed = 0.1;
+	this.pulse_speed = 0.6;
 	this.speed_upgrade_k_max = 4;
 	this.pulse_duration = 800; // ms
 	this.collider_radius = 20;
@@ -172,6 +172,29 @@ Player.prototype.take_damage = function (amount)
 	}
 }
 
+Player.prototype.collide = function (next_pos, other)
+{
+	this.is_collided = true;
+	this.force_inertia_timer = game.force_inertia_duration;
+
+	var other_velocity = {};
+
+	var angle_to_other = Math.atan2(next_pos.y - other.y, next_pos.x - other.x);
+	other_velocity.angle_to_other = -angle_to_other;
+	var speed_sum = this.speed + other.speed;
+	var energy = (this.speed * this.collider_radius) + (other.speed * other.collider_radius);
+	var player_energy = lerp(0, energy, this.collider_radius / (this.collider_radius + other.collider_radius));
+	other_velocity.energy = energy - player_energy;
+
+	this.force_x = Math.cos(angle_to_other) * player_energy * other.bounciness;
+	this.force_y = Math.sin(angle_to_other) * player_energy * other.bounciness;
+
+	this.take_damage(Math.max(0, other.collider_radius - this.collider_radius) * this.speed);
+	this.pulse_timer = 0;
+
+	return other_velocity;
+}
+
 Player.prototype.check_distances = function (x, y)
 {
 	var next_pos = { x: x, y: y };
@@ -182,39 +205,15 @@ Player.prototype.check_distances = function (x, y)
 
 		if (d < game.view_dist_sqrt) // visible
 		{
-			game.visible_obj[game.visible_obj.length] = game.planets[i];
-			game.planets[i].screen_x = game.hW + (game.planets[i].x - x);
-			game.planets[i].screen_y = game.hH + (game.planets[i].y - y);
+			game.planets[i].set_visible(x, y);
 
 			if (d < game.planets[i].trigger_and_player_radius_sqrt)
 			{
-				if (!game.planets[i].discovered)
-				{
-					game.planets[i].discovered = true;
-					storage.save(game.planets[i].id, "discovered_planets");
-					unLockPopUp(game.planets[i]);
-					this.gain_xp(game.planets[i].xp_value);
-				}
-
+				game.planets[i].discover();
+				
 				if (d < game.planets[i].collider_and_player_radius_sqrt)
 				{
-					this.is_collided = true;
-					this.force_inertia_timer = game.force_inertia_duration;
-
-					var angle = Math.atan2(y - game.planets[i].y, x - game.planets[i].x);
-					var str = this.speed * 1.1;
-
-					this.force_x = Math.cos(angle) * str;
-					this.force_y = Math.sin(angle) * str;
-
-					//if (this.pulse_timer == 0)
-					//{
-						this.take_damage(Math.max(0, game.planets[i].collider_radius - this.collider_radius) * this.speed);
-					//}
-					//else
-					//{
-						this.pulse_timer = 0;
-					//}
+					this.collide(next_pos, game.planets[i]);
 				}
 			}
 		}

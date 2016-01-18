@@ -39,8 +39,8 @@ function init ()
 	game.buffer_ctx = game.buffer_canvas.getContext("2d");
 	game.player = new Player(game.world_edges.w >> 1, game.world_edges.h >> 1);
 	game.bgs = create_stars_bgs([ 1024, 512, 256, 64 ]);
-	game.bg_speed_min = 0.4;
-	game.bg_speed_max = 0.6;
+	game.bg_speed_min = 0.3;
+	game.bg_speed_max = 0.7;
 
 	init_planets(1 << 8);
 	
