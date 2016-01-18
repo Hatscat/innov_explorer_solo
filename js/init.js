@@ -28,6 +28,8 @@ function init ()
 		time: 0
 	};
 
+	storage.load();
+
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;
 	game.view_dist_sqrt = game.hW * game.hW + game.hH * game.hH + game.larger_visible_radius * game.larger_visible_radius;
@@ -71,14 +73,18 @@ function create_stars_bgs (stars_nb_by_layers)
 
 function unLockPopUp (planet)
 {
-	if (!localStorage.planets)
-		localStorage.planets = "";
+	console.log(planet.id);
+}
 
-	console.log(JSON.stringify(planet))
+function UIXpGain (amoutOfXpGained)
+{
+	console.log(amoutOfXpGained);
 }
 
 function init_planets (n)
 {
+	var discovered_planets = storage.load("discovered_planets");
+
 	for (var i = n; i--;)
 	{
 		var c = document.createElement("canvas");
@@ -90,7 +96,7 @@ function init_planets (n)
 		ctx.arc(r, r, r, 0, Math.PI*2);
 		ctx.fill();
 
-		game.planets[game.planets.length] = new Planet(c, game.W + Math.random() * (game.world_edges.w - 2*game.W), game.H + Math.random() * (game.world_edges.h - 2*game.H), r, c.width);
+		game.planets[game.planets.length] = new Planet(i, c, game.W + Math.random() * (game.world_edges.w - 2*game.W), game.H + Math.random() * (game.world_edges.h - 2*game.H), discovered_planets.indexOf(i) != -1, r, c.width);
 	}
 }
 

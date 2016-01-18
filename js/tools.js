@@ -14,6 +14,10 @@ function dist_xy_sqrt (a, b) {
 	return dx * dx + dy * dy;
 }
 
+function quadratic_out (k) {
+	return k * (2 - k);
+}
+
 function loop_index (index, length) {
 	return (length + (index % length)) % length;
 }
