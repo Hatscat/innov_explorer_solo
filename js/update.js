@@ -7,7 +7,7 @@ function update (t)
 
 	if (game.player.is_stopped)
 	{
-		this.pulse_timer = 0;
+		game.player.pulse_timer = 0;
 	}
 	else
 	{
