@@ -27,21 +27,10 @@ Meteor.prototype.get_next_y = function ()
 	return this.y + (Math.sin(this.dir) * this.speed + this.force_y) * game.deltatime;
 }
 
-Meteor.prototype.update_forces = function ()
+Meteor.prototype.set_visible = function (player_x, player_y)
 {
-	if (this.force_inertia_timer > 0)
-	{
-		var k = this.force_inertia_timer / game.force_inertia_duration;
-		this.force_inertia_timer -= game.deltatime;
-
-		this.force_x = lerp(0, this.force_x, k);
-		this.force_y = lerp(0, this.force_y, k);
-	}
-	else
-	{
-		this.force_inertia_timer = 0;
-		this.force_x = 0;
-		this.force_y = 0;
-	}
+	game.visible_obj[game.visible_obj.length] = this;
+	this.screen_x = game.hW + (this.x - player_x);
+	this.screen_y = game.hH + (this.y - player_y);
 }
 

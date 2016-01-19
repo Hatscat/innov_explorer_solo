@@ -12,6 +12,7 @@ function init ()
 		visible_ctx: visible_canvas.getContext("2d"),
 		visible_obj: [],
 		planets: [],
+		satellites: [],
 		meteors: [],
 		mouse: {
 			x: 0,
@@ -42,7 +43,7 @@ function init ()
 	game.bg_speed_min = 0.3;
 	game.bg_speed_max = 0.7;
 
-	init_planets(1 << 8);
+	init_planets(1 << 8, 1 << 2);
 	
 	init_events();
 
@@ -95,7 +96,7 @@ function AnimYouDied ()
 	game.player.init();
 }
 
-function init_planets (n)
+function init_planets (n, m)
 {
 	var discovered_planets = storage.load("discovered_planets");
 
@@ -105,12 +106,33 @@ function init_planets (n)
 		c.width = c.height = Math.floor(128 + Math.random() * (game.larger_visible_radius - 128));
 		var r = c.width >> 1;
 		var ctx = c.getContext("2d");
-		ctx.fillStyle = "#" + (0x222 | Math.random() * 0x1000).toString(16);
+		var col = 0x222 | Math.random() * 0x1000;
+		ctx.fillStyle = "#" + col.toString(16);
 		ctx.beginPath();
 		ctx.arc(r, r, r, 0, Math.PI*2);
 		ctx.fill();
 
-		game.planets[game.planets.length] = new Planet(i, c, game.W + Math.random() * (game.world_edges.w - 2*game.W), game.H + Math.random() * (game.world_edges.h - 2*game.H), discovered_planets.indexOf(i) != -1, r, c.width);
+		var p = new Planet(i, c, game.W + Math.random() * (game.world_edges.w - 2*game.W), game.H + Math.random() * (game.world_edges.h - 2*game.H), discovered_planets.indexOf(i) != -1, r, r * 1.5);
+
+		game.planets[game.planets.length] = p;
+
+		var sat_dir = Math.random() < 0.5 ? -1 : 1;
+	
+		for (var ii = m; ii--;)
+		{
+			var cc = document.createElement("canvas");
+			cc.width = cc.height = Math.floor(32 + Math.random() * (c.width - 128));
+			var rr = cc.width >> 1;
+			var ctx = cc.getContext("2d");
+			ctx.fillStyle = "#" + (col | 0x555).toString(16);
+			ctx.beginPath();
+			ctx.arc(rr, rr, rr, 0, Math.PI*2);
+			ctx.fill();
+
+			var id = '' + i + ii;
+
+			game.satellites[game.satellites.length] = new Satellite(id, p, Math.max(0.05, Math.random()) * sat_dir, cc, r + rr * 2 + Math.random() * rr * 3, Math.random() * Math.PI * 2, discovered_planets.indexOf(id) != -1, rr, rr * 1.5);
+		}
 	}
 }
 

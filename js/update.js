@@ -12,9 +12,20 @@ function update (t)
 	// spawn
 	// update
 
+	// ---- satellites ---- //
+	
+	for (var i = game.satellites.length; i--;)
+	{
+		game.satellites[i].move();
+	}
+
 	// ---- player ---- //
 
-	if (!game.player.is_stopped)
+	if (game.player.is_stopped)
+	{
+		this.pulse_timer = 0;
+	}
+	else
 	{
 		game.player.update_speed();
 		game.player.update_forces();

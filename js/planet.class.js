@@ -5,7 +5,7 @@ function Planet (id, sprite, x, y, was_discovered, collider_radius, trigger_radi
 	// ---- config ---- //
 
 	this.xp_value = 400;
-	this.bounciness = 0.5;
+	this.bounciness = 0.1;
 	this.speed = 0;
 	this.dir = 0;
 	

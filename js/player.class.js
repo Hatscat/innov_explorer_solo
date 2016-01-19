@@ -26,6 +26,7 @@ function Player (x, y)
 	this.hp_upgrade_k = storage.load("player_hp_k");
 	this.xp = storage.load("player_xp");
 	this.upgrades = storage.load("player_upgrades");
+
 	this.init();
 }
 
@@ -45,11 +46,6 @@ Player.prototype.init = function ()
 Player.prototype.check_level = function ()
 {
 	return lerp(0, this.upgrades_length, quadratic_out(this.xp / this.xp_max));
-}
-
-Player.prototype.check_xp_needed = function (lvl)
-{
-	return ; // todo?
 }
 
 Player.prototype.level_up = function (upgrade_choice)
@@ -83,8 +79,14 @@ Player.prototype.get_next_x = function ()
 
 	if (x < 0 || x > game.world_edges.w)
 	{
-		console.log("x limit!", x);
-		return x + game.world_edges.w * sign(-x);
+		//console.log("x limit!", x);
+		//return x + game.world_edges.w * sign(-x);
+		var dir = this.x - x;
+
+		this.force_inertia_timer = game.force_inertia_duration;
+		this.force_x = this.pulse_speed * this.collider_radius * sign(dir);
+		this.pulse_timer = 0;
+		return this.x + dir;
 	}
 	return x;
 }
@@ -95,8 +97,14 @@ Player.prototype.get_next_y = function ()
 
 	if (y < 0 || y > game.world_edges.h)
 	{
-		console.log("y limit!", y);
-		return y + game.world_edges.h * sign(-y);
+		//console.log("y limit!", y);
+		//return y + game.world_edges.h * sign(-y);
+		var dir = this.y - y;
+
+		this.force_inertia_timer = game.force_inertia_duration;
+		this.force_y = this.pulse_speed * this.collider_radius * sign(dir);
+		this.pulse_timer = 0;
+		return this.y + dir;
 	}
 	return y;
 }
@@ -181,9 +189,9 @@ Player.prototype.collide = function (next_pos, other)
 
 	var angle_to_other = Math.atan2(next_pos.y - other.y, next_pos.x - other.x);
 	other_velocity.angle_to_other = -angle_to_other;
-	var speed_sum = this.speed + other.speed;
-	var energy = (this.speed * this.collider_radius) + (other.speed * other.collider_radius);
-	var player_energy = lerp(0, energy, this.collider_radius / (this.collider_radius + other.collider_radius));
+	//var speed_sum = this.speed + other.speed;// * angles_interval(this.dir, other.dir);
+	var energy = (this.speed  * this.collider_radius) + (other.speed * other.collider_radius);
+	var player_energy = lerp(0, energy, other.collider_radius / (this.collider_radius + other.collider_radius));
 	other_velocity.energy = energy - player_energy;
 
 	this.force_x = Math.cos(angle_to_other) * player_energy * other.bounciness;
@@ -214,6 +222,28 @@ Player.prototype.check_distances = function (x, y)
 				if (d < game.planets[i].collider_and_player_radius_sqrt)
 				{
 					this.collide(next_pos, game.planets[i]);
+				}
+			}
+		}
+	}
+
+	for (var i = game.satellites.length; i--;)
+	{
+		var d = dist_xy_sqrt(game.satellites[i], next_pos);
+
+		//console.log(d);
+
+		if (d < game.view_dist_sqrt) // visible
+		{
+			game.satellites[i].set_visible(x, y);
+
+			if (d < game.satellites[i].trigger_and_player_radius_sqrt)
+			{
+				game.satellites[i].discover();
+				
+				if (d < game.satellites[i].collider_and_player_radius_sqrt)
+				{
+					this.collide(next_pos, game.satellites[i]);
 				}
 			}
 		}
