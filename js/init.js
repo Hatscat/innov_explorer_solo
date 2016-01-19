@@ -36,10 +36,7 @@ function init ()
 	{
 		storage.init(); // reset
 	}
-	else
-	{
-		storage.load();
-	}
+	storage.load();
 
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;
