@@ -12,7 +12,7 @@ function Player (x, y)
 	this.upgrades_length = 11;
 	this.hp_max = 1000;
 	this.hp_upgrade_k_max = 4;
-	this.hp_regen = 0.0001; // * hp_max * deltatime
+	this.hp_regen = 0.00002; // * hp_max * deltatime
 	this.xp_max = 20000;
 
 	// ---- props ---- //
