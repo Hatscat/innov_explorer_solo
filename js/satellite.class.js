@@ -8,6 +8,7 @@ function Satellite (id, planet, speed, sprite, r, theta, was_discovered, collide
 
 	// ---- config ---- //
 
+	this.bounciness = 0.06;
 	this.xp_value = 200;
 	this.speed = speed;
 	this.planet = planet;

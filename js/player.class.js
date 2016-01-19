@@ -188,19 +188,21 @@ Player.prototype.collide = function (next_pos, other)
 	var other_velocity = {};
 
 	var angle_to_other = Math.atan2(next_pos.y - other.y, next_pos.x - other.x);
-	//var angle_to_player = Math.atan2(other.y - next_pos.y, other.x - next_pos.x);
-	other_velocity.angle_to_other = -angle_to_other;
+	//other_velocity.angle_to_other = Math.atan2(other.y - next_pos.y, other.x - next_pos.x);
+	//
 	//var speed_sum = this.speed + other.speed;// * angles_interval(this.dir, other.dir);
-	var energy = (this.speed  * this.collider_radius) + (other.speed * other.collider_radius);
-	var player_energy = lerp(0, energy, other.collider_radius / (this.collider_radius + other.collider_radius));
+	var energy = (this.speed  * this.collider_radius) + Math.abs(other.speed * other.collider_radius);
+	var player_energy = lerp(this.speed*2, energy, other.collider_radius / (this.collider_radius + other.collider_radius));
 
 	other_velocity.energy = energy - player_energy;
 
-	other.force_x = Math.cos(angle_to_other - Math.PI) * other_velocity.energy * 0.05;
-	other.force_y = Math.sin(angle_to_other - Math.PI) * other_velocity.energy * 0.05;
+	other.force_x = Math.cos(angle_to_other - Math.PI) * other_velocity.energy * other.bounciness;
+	other.force_y = Math.sin(angle_to_other - Math.PI) * other_velocity.energy * other.bounciness;
 
 	this.force_x = Math.cos(angle_to_other) * player_energy * other.bounciness;
 	this.force_y = Math.sin(angle_to_other) * player_energy * other.bounciness;
+
+	//console.log(this.force_x, this.force_y)
 
 	this.take_damage(Math.max(0, other.collider_radius - this.collider_radius) * this.speed);
 	this.pulse_timer = 0;

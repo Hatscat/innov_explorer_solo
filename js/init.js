@@ -32,7 +32,14 @@ function init ()
 		time: 0
 	};
 
-	storage.load();
+	if (location.href.indexOf('?') != -1) // dev mode
+	{
+		storage.init(); // reset
+	}
+	else
+	{
+		storage.load();
+	}
 
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;
@@ -46,7 +53,7 @@ function init ()
 	game.bg_speed_min = 0.3;
 	game.bg_speed_max = 0.7;
 
-	init_planets(256, 4);
+	init_planets(128, 4);
 
 	init_meteors(game.meteors_nb);
 	

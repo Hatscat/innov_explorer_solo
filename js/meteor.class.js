@@ -2,7 +2,7 @@
 
 function Meteor (sprite, x, y, dir, speed, collider_radius)
 {
-	this.bounciness = 0.1;
+	this.bounciness = 0.03;
 
 	this.sprite = sprite;
 	this.x = x;
