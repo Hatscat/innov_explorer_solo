@@ -2,6 +2,8 @@
 
 function Meteor (sprite, x, y, dir, speed, collider_radius)
 {
+	this.bounciness = 0.1;
+
 	this.sprite = sprite;
 	this.x = x;
 	this.y = y;
@@ -14,17 +16,42 @@ function Meteor (sprite, x, y, dir, speed, collider_radius)
 	this.force_inertia_timer = 0;
 	this.collider_radius = collider_radius;
 	this.collider_and_player_radius_sqrt = Math.pow(this.collider_radius + game.player.collider_radius, 2);
-	this.is_stop = false;
 }
 
 Meteor.prototype.get_next_x = function ()
 {
-	return this.x + (Math.cos(this.dir) * this.speed + this.force_x) * game.deltatime;
+	var x = this.x + (Math.cos(this.dir) * this.speed + this.force_x) * game.deltatime;
+
+	if (x < 0 || x > game.world_edges.w)
+	{
+		this.dir = Math.random() * Math.PI * 0.5 - Math.PI * 0.25 - this.dir;
+		this.force_x = 0;
+		this.force_y = 0;
+
+		return this.x + (this.x - x);
+	}
+	return x;
 }
 
 Meteor.prototype.get_next_y = function ()
 {
-	return this.y + (Math.sin(this.dir) * this.speed + this.force_y) * game.deltatime;
+	var y = this.y + (Math.sin(this.dir) * this.speed + this.force_y) * game.deltatime;
+
+	if (y < 0 || y > game.world_edges.h)
+	{
+		this.dir = Math.random() * Math.PI * 0.5 - Math.PI * 0.25 - this.dir;
+		this.force_x = 0;
+		this.force_y = 0;
+
+		return this.y + (this.y - y);
+	}
+	return y;
+}
+
+Meteor.prototype.move = function ()
+{
+	this.x = this.get_next_x();
+	this.y = this.get_next_y();
 }
 
 Meteor.prototype.set_visible = function (player_x, player_y)

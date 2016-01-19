@@ -188,11 +188,16 @@ Player.prototype.collide = function (next_pos, other)
 	var other_velocity = {};
 
 	var angle_to_other = Math.atan2(next_pos.y - other.y, next_pos.x - other.x);
+	//var angle_to_player = Math.atan2(other.y - next_pos.y, other.x - next_pos.x);
 	other_velocity.angle_to_other = -angle_to_other;
 	//var speed_sum = this.speed + other.speed;// * angles_interval(this.dir, other.dir);
 	var energy = (this.speed  * this.collider_radius) + (other.speed * other.collider_radius);
 	var player_energy = lerp(0, energy, other.collider_radius / (this.collider_radius + other.collider_radius));
+
 	other_velocity.energy = energy - player_energy;
+
+	other.force_x = Math.cos(angle_to_other - Math.PI) * other_velocity.energy * 0.05;
+	other.force_y = Math.sin(angle_to_other - Math.PI) * other_velocity.energy * 0.05;
 
 	this.force_x = Math.cos(angle_to_other) * player_energy * other.bounciness;
 	this.force_y = Math.sin(angle_to_other) * player_energy * other.bounciness;
@@ -206,6 +211,26 @@ Player.prototype.collide = function (next_pos, other)
 Player.prototype.check_distances = function (x, y)
 {
 	var next_pos = { x: x, y: y };
+
+	for (var i = game.satellites.length; i--;)
+	{
+		var d = dist_xy_sqrt(game.satellites[i], next_pos);
+
+		if (d < game.view_dist_sqrt) // visible
+		{
+			game.satellites[i].set_visible(x, y);
+
+			if (d < game.satellites[i].trigger_and_player_radius_sqrt)
+			{
+				game.satellites[i].discover();
+				
+				if (d < game.satellites[i].collider_and_player_radius_sqrt)
+				{
+					this.collide(next_pos, game.satellites[i]);
+				}
+			}
+		}
+	}
 	
 	for (var i = game.planets.length; i--;)
 	{
@@ -226,32 +251,20 @@ Player.prototype.check_distances = function (x, y)
 			}
 		}
 	}
-
-	for (var i = game.satellites.length; i--;)
+	
+	for (var i = game.meteors.length; i--;)
 	{
-		var d = dist_xy_sqrt(game.satellites[i], next_pos);
-
-		//console.log(d);
+		var d = dist_xy_sqrt(game.meteors[i], next_pos);
 
 		if (d < game.view_dist_sqrt) // visible
 		{
-			game.satellites[i].set_visible(x, y);
+			game.meteors[i].set_visible(x, y);
 
-			if (d < game.satellites[i].trigger_and_player_radius_sqrt)
+			if (d < game.meteors[i].collider_and_player_radius_sqrt)
 			{
-				game.satellites[i].discover();
-				
-				if (d < game.satellites[i].collider_and_player_radius_sqrt)
-				{
-					this.collide(next_pos, game.satellites[i]);
-				}
+				this.collide(next_pos, game.meteors[i]);
 			}
 		}
-	}
-
-	for (var i = game.meteors.length; i--;)
-	{
-
 	}
 }
 

@@ -5,28 +5,30 @@ function update (t)
 	game.deltatime = t - game.time;
 	game.time = t;
 
-	game.visible_obj = []; // reset pipeline
-
-	// ---- meteors ---- //
-	
-	// spawn
-	// update
-
-	// ---- satellites ---- //
-	
-	for (var i = game.satellites.length; i--;)
-	{
-		game.satellites[i].move();
-	}
-
-	// ---- player ---- //
-
 	if (game.player.is_stopped)
 	{
 		this.pulse_timer = 0;
 	}
 	else
 	{
+		game.visible_obj = []; // reset pipeline
+
+		// ---- meteors ---- //
+		
+		for (var i = game.meteors.length; i--;)
+		{
+			game.meteors[i].move();
+		}
+
+		// ---- satellites ---- //
+		
+		for (var i = game.satellites.length; i--;)
+		{
+			game.satellites[i].move();
+		}
+
+		// ---- player ---- //
+
 		game.player.update_speed();
 		game.player.update_forces();
 		game.player.update_hp();

@@ -14,6 +14,7 @@ function init ()
 		planets: [],
 		satellites: [],
 		meteors: [],
+		meteors_nb: 1024,
 		mouse: {
 			x: 0,
 			y: 0,
@@ -35,7 +36,9 @@ function init ()
 
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;
-	game.view_dist_sqrt = game.hW * game.hW + game.hH * game.hH + game.larger_visible_radius * game.larger_visible_radius;
+	var visible_w = game.hW + game.larger_visible_radius;
+	var visible_h = game.hH + game.larger_visible_radius;
+	game.view_dist_sqrt = visible_w * visible_w + visible_h * visible_h;
 	game.buffer_canvas = visible_canvas.cloneNode();
 	game.buffer_ctx = game.buffer_canvas.getContext("2d");
 	game.player = new Player(game.world_edges.w >> 1, game.world_edges.h >> 1);
@@ -43,7 +46,9 @@ function init ()
 	game.bg_speed_min = 0.3;
 	game.bg_speed_max = 0.7;
 
-	init_planets(1 << 8, 1 << 2);
+	init_planets(256, 4);
+
+	init_meteors(game.meteors_nb);
 	
 	init_events();
 
@@ -94,6 +99,24 @@ function AnimYouDied ()
 {
 	console.log("you died");
 	game.player.init();
+}
+
+function init_meteors (n)
+{
+	for (var i = n; i--;)
+	{
+		var c = document.createElement("canvas");
+		c.width = c.height = Math.floor(32 + Math.random() * 128);
+		var r = c.width >> 1;
+		var ctx = c.getContext("2d");
+		var col = (4 | Math.random() * 0x8).toString(16);
+		ctx.fillStyle = "#" + col + col + col;
+		ctx.beginPath();
+		ctx.arc(r, r, r, 0, Math.PI*2);
+		ctx.fill();
+
+		game.meteors[game.meteors.length] = new Meteor(c, r + Math.random() * (game.world_edges.w - r), r + Math.random() * (game.world_edges.w - r), Math.random() * Math.PI * 2, 0.2 + Math.random(), r);
+	}
 }
 
 function init_planets (n, m)

@@ -47,8 +47,6 @@ Satellite.prototype.move = function ()
 Satellite.prototype.set_visible = function (player_x, player_y)
 {
 	Planet.prototype.set_visible.call(this, player_x, player_y);
-
-	console.log(this);
 }
 
 Satellite.prototype.discover = function ()
