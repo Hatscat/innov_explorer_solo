@@ -21,11 +21,10 @@ function init ()
 			is_down: false
 		},
 		world_edges: {
-			//x: 0,
-			//y: 0,
 			w: 32000, // at least 3 * innerWidth
 			h: 16000 // at least 3 * innerHeight
 		},
+		
 		larger_visible_radius: 512,
 		force_inertia_duration: 1000, // ms
 		deltatime: 1,
@@ -40,8 +39,16 @@ function init ()
 
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;
+	game.world_hard_limits = {
+		x: game.world_edges.w * -0.2,
+		y: game.world_edges.h * -0.2,
+		w: game.world_edges.w * 1.2,
+		h: game.world_edges.h * 1.2
+	};
+
 	var visible_w = game.hW + game.larger_visible_radius;
 	var visible_h = game.hH + game.larger_visible_radius;
+
 	game.view_dist_sqrt = visible_w * visible_w + visible_h * visible_h;
 	game.buffer_canvas = visible_canvas.cloneNode();
 	game.buffer_ctx = game.buffer_canvas.getContext("2d");

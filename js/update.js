@@ -2,7 +2,7 @@
 
 function update (t)
 {
-	game.deltatime = t - game.time;
+	game.deltatime = Math.min(70, t - game.time);
 	game.time = t;
 
 	if (game.player.is_stopped)

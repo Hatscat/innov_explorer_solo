@@ -22,7 +22,7 @@ Meteor.prototype.get_next_x = function ()
 {
 	var x = this.x + (Math.cos(this.dir) * this.speed + this.force_x) * game.deltatime;
 
-	if (x < 0 || x > game.world_edges.w)
+	if (x < game.world_hard_limits.x || x > game.world_hard_limits.w)
 	{
 		this.dir = Math.random() * Math.PI * 0.5 - Math.PI * 0.25 - this.dir;
 		this.force_x = 0;
@@ -37,7 +37,7 @@ Meteor.prototype.get_next_y = function ()
 {
 	var y = this.y + (Math.sin(this.dir) * this.speed + this.force_y) * game.deltatime;
 
-	if (y < 0 || y > game.world_edges.h)
+	if (y < game.world_hard_limits.y || y > game.world_hard_limits.h)
 	{
 		this.dir = Math.random() * Math.PI * 0.5 - Math.PI * 0.25 - this.dir;
 		this.force_x = 0;

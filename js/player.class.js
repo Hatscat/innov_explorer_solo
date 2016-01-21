@@ -13,6 +13,7 @@ function Player (x, y)
 	this.hp_max = 1000;
 	this.hp_upgrade_k_max = 4;
 	this.hp_regen = 0.00002; // * hp_max * deltatime
+	this.hp_dot = 0.0005;
 	this.xp_max = 20000;
 
 	// ---- props ---- //
@@ -77,14 +78,11 @@ Player.prototype.get_next_x = function ()
 {
 	var x = this.x + (Math.cos(this.dir) * this.speed + this.force_x) * game.deltatime;
 
-	if (x < 0 || x > game.world_edges.w)
+	if (x < game.world_hard_limits.x || x > game.world_hard_limits.w)
 	{
-		//console.log("x limit!", x);
-		//return x + game.world_edges.w * sign(-x);
 		var dir = this.x - x;
 
-		this.force_inertia_timer = game.force_inertia_duration;
-		this.force_x = this.pulse_speed * this.collider_radius * sign(dir);
+		this.take_damage(this.hp_dot * this.hp_max * game.deltatime);
 		this.pulse_timer = 0;
 		return this.x + dir;
 	}
@@ -95,14 +93,11 @@ Player.prototype.get_next_y = function ()
 {
 	var y = this.y + (Math.sin(this.dir) * this.speed + this.force_y) * game.deltatime;
 
-	if (y < 0 || y > game.world_edges.h)
+	if (y < game.world_hard_limits.y || y > game.world_hard_limits.h)
 	{
-		//console.log("y limit!", y);
-		//return y + game.world_edges.h * sign(-y);
 		var dir = this.y - y;
 
-		this.force_inertia_timer = game.force_inertia_duration;
-		this.force_y = this.pulse_speed * this.collider_radius * sign(dir);
+		this.take_damage(this.hp_dot * this.hp_max * game.deltatime);
 		this.pulse_timer = 0;
 		return this.y + dir;
 	}
