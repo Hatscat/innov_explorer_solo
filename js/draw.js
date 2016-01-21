@@ -12,8 +12,8 @@ function draw ()
 	for (var i = game.bgs.length; i--;)
 	{
 		var speed = lerp(game.bg_speed_min, game.bg_speed_max, i / (game.bgs.length - 1));
-		var x = -game.player.x * speed % game.bgs[i].width;
-		var y = -game.player.y * speed % game.bgs[i].height;
+		var x = -game.player.pos.x * speed % game.bgs[i].width;
+		var y = -game.player.pos.y * speed % game.bgs[i].height;
 		var x_off = x + game.bgs[i].width * sign(-x);
 		var y_off = y + game.bgs[i].height * sign(-y);
 		
@@ -34,7 +34,7 @@ function draw ()
 
 	// ---- player ---- //
 
-	game.buffer_ctx.fillStyle = game.player.pulse_timer ? "#0f0" : "#fff";
+	game.buffer_ctx.fillStyle = "#fff";
 	game.buffer_ctx.beginPath();
 	game.buffer_ctx.arc(game.hW, game.hH, game.player.collider_radius, 0, Math.PI*2);
 	game.buffer_ctx.fill();

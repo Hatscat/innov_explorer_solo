@@ -29,24 +29,17 @@ function update (t)
 
 		// ---- player ---- //
 
-		game.player.update_speed();
-		game.player.update_forces();
+		//game.player.update_pulse();
 		game.player.update_hp();
 		
-		if (game.player.pulse_timer == 0)
-		{
-			game.player.update_dir();
-		}
-
-		var next_x = game.player.get_next_x();
-		var next_y = game.player.get_next_y();
+		var next_pos = game.player.get_next_pos();
 		
-		game.player.check_distances(next_x, next_y);
+		game.player.check_limits(next_pos);
+		game.player.check_distances(next_pos);
 
 		if (!game.player.is_collided)
 		{
-			game.player.x = next_x;
-			game.player.y = next_y;
+			game.player.pos = next_pos;
 		}
 		
 		game.player.is_collided = false;

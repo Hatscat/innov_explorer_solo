@@ -8,7 +8,7 @@ function sign (n) {
 	return n < 0 ? -1 : 1;
 }
 
-function dist_xy_sqrt (a, b) {
+function dist_xy_sqr (a, b) {
 	var dx = a.x - b.x;
 	var dy = a.y - b.y;
 	return dx * dx + dy * dy;

@@ -21,8 +21,8 @@ function init ()
 			is_down: false
 		},
 		world_edges: {
-			w: 32000, // at least 3 * innerWidth
-			h: 16000 // at least 3 * innerHeight
+			w: 64000, // at least 3 * innerWidth
+			h: 32000 // at least 3 * innerHeight
 		},
 		
 		larger_visible_radius: 512,
@@ -40,10 +40,10 @@ function init ()
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;
 	game.world_hard_limits = {
-		x: game.world_edges.w * -0.2,
-		y: game.world_edges.h * -0.2,
-		w: game.world_edges.w * 1.2,
-		h: game.world_edges.h * 1.2
+		x: game.world_edges.w * -0.3,
+		y: game.world_edges.h * -0.3,
+		w: game.world_edges.w * 1.3,
+		h: game.world_edges.h * 1.3
 	};
 
 	var visible_w = game.hW + game.larger_visible_radius;
@@ -126,7 +126,7 @@ function init_meteors (n)
 		ctx.arc(r, r, r, 0, Math.PI*2);
 		ctx.fill();
 
-		game.meteors[game.meteors.length] = new Meteor(c, r + Math.random() * (game.world_edges.w - r), r + Math.random() * (game.world_edges.w - r), Math.random() * Math.PI * 2, 0.2 + Math.random(), r);
+		game.meteors[game.meteors.length] = new Meteor(c, r + Math.random() * (game.world_edges.w), r + Math.random() * (game.world_edges.w), Math.random() * Math.PI * 2, 0.2 + Math.random(), r);
 	}
 }
 
@@ -146,7 +146,7 @@ function init_planets (n, m)
 		ctx.arc(r, r, r, 0, Math.PI*2);
 		ctx.fill();
 
-		var p = new Planet(i, c, game.W + Math.random() * (game.world_edges.w - 2*game.W), game.H + Math.random() * (game.world_edges.h - 2*game.H), discovered_planets.indexOf(i) != -1, r, r * 1.5);
+		var p = new Planet(i, c, game.W + Math.random() * (game.world_edges.w), game.H + Math.random() * (game.world_edges.h ), discovered_planets.indexOf(i) != -1, r, r * 1.5);
 
 		game.planets[game.planets.length] = p;
 

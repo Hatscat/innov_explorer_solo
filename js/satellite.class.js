@@ -17,6 +17,8 @@ function Satellite (id, planet, speed, sprite, r, theta, was_discovered, collide
 	
 	// ---- props ---- //
 	
+	//this.dir = new Vector2(0, 0);
+	this.velocity = new Vector2(0, 0);
 
 }
 
@@ -41,8 +43,8 @@ Satellite.prototype.move = function ()
 {
 	this.theta += (this.speed / this.r) * game.deltatime;
 	//this.theta += this.speed * game.deltatime;
-	this.x = this.planet.x + this.r * Math.cos(this.theta);
-	this.y = this.planet.y + this.r * Math.sin(this.theta);
+	this.pos.x = this.planet.pos.x + this.r * Math.cos(this.theta);
+	this.pos.y = this.planet.pos.y + this.r * Math.sin(this.theta);
 }
 
 Satellite.prototype.set_visible = function (player_x, player_y)

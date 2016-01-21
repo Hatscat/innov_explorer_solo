@@ -4,12 +4,15 @@ function Player (x, y)
 {
 	// ---- config ---- //
 	
-	this.default_speed = 0.1;
-	this.pulse_speed = 0.6;
+	//this.default_speed = 0.1;
+	//this.pulse_speed = 0.6;
+	this.pulse_strength = 0.3;
 	this.speed_upgrade_k_max = 4;
-	this.pulse_duration = 800; // ms
+	//this.pulse_duration = 800; // ms
+	//this.pulse_interval = 300; // ms
+	this.fall_speed = 0.01;
 	this.collider_radius = 20;
-	this.upgrades_length = 11;
+	this.upgrades_length = 4;
 	this.hp_max = 1000;
 	this.hp_upgrade_k_max = 4;
 	this.hp_regen = 0.00002; // * hp_max * deltatime
@@ -20,7 +23,10 @@ function Player (x, y)
 
 	this.start_x = x;
 	this.start_y = y;
-	this.speed = 0;
+	this.pos = new Vector2(x, y);
+	this.dir = new Vector2(0, 0);
+	this.velocity = new Vector2(0, 0);
+	//this.speed = 0;
 	this.is_stopped = false;
 	this.is_collided = false;
 	this.speed_upgrade_k = storage.load("player_speed_k");
@@ -33,13 +39,14 @@ function Player (x, y)
 
 Player.prototype.init = function ()
 {
-	this.x = this.start_x;
-	this.y = this.start_y;
-	this.dir = 0;
-	this.force_x = 0;
-	this.force_y = 0;
+	this.pos.set(this.start_x, this.start_y);
+	this.dir.set(0, 0);
+	this.velocity.set(0, 0);
+	//this.dir = 0;
+	//this.force_x = 0;
+	//this.force_y = 0;
 	this.pulse_timer = 0;
-	this.force_inertia_timer = 0;
+	//this.force_inertia_timer = 0;
 	this.can_pulse = true;
 	this.hp = this.hp_max * this.hp_upgrade_k;
 }
@@ -74,76 +81,14 @@ Player.prototype.get_hp_ratio = function ()
 	return this.hp / (this.hp_max * this.hp_upgrade_k);
 }
 
-Player.prototype.get_next_x = function ()
+Player.prototype.get_next_pos = function ()
 {
-	var x = this.x + (Math.cos(this.dir) * this.speed + this.force_x) * game.deltatime;
-
-	if (x < game.world_hard_limits.x || x > game.world_hard_limits.w)
-	{
-		var dir = this.x - x;
-
-		this.take_damage(this.hp_dot * this.hp_max * game.deltatime);
-		this.pulse_timer = 0;
-		return this.x + dir;
-	}
-	return x;
-}
-
-Player.prototype.get_next_y = function ()
-{
-	var y = this.y + (Math.sin(this.dir) * this.speed + this.force_y) * game.deltatime;
-
-	if (y < game.world_hard_limits.y || y > game.world_hard_limits.h)
-	{
-		var dir = this.y - y;
-
-		this.take_damage(this.hp_dot * this.hp_max * game.deltatime);
-		this.pulse_timer = 0;
-		return this.y + dir;
-	}
-	return y;
-}
-
-Player.prototype.update_dir = function ()
-{
-	this.dir = Math.atan2(game.mouse.y - game.hH, game.mouse.x - game.hW);
-}
-
-Player.prototype.update_speed = function ()
-{
-	if (this.pulse_timer > 0)
-	{
-		this.pulse_timer -= game.deltatime;
-		this.speed = this.pulse_speed * this.speed_upgrade_k;
-	}
-	else
-	{
-		this.pulse_timer = 0;
-		this.speed = this.default_speed * this.speed_upgrade_k;
-	}
+	return this.pos.clone().add(this.velocity.clone().scale(this.speed_upgrade_k * game.deltatime));
 }
 
 Player.prototype.update_hp = function ()
 {
 	this.hp = Math.min(this.hp + this.hp_regen * this.hp_max * this.hp_upgrade_k * game.deltatime, this.hp_max * this.hp_upgrade_k);
-}
-
-Player.prototype.update_forces = function ()
-{
-	if (this.force_inertia_timer > 0)
-	{
-		var k = this.force_inertia_timer / game.force_inertia_duration;
-		this.force_inertia_timer -= game.deltatime;
-
-		this.force_x = lerp(0, this.force_x, k);
-		this.force_y = lerp(0, this.force_y, k);
-	}
-	else
-	{
-		this.force_inertia_timer = 0;
-		this.force_x = 0;
-		this.force_y = 0;
-	}
 }
 
 Player.prototype.gain_xp = function (amount)
@@ -177,9 +122,11 @@ Player.prototype.take_damage = function (amount)
 
 Player.prototype.collide = function (next_pos, other)
 {
-	this.is_collided = true;
-	this.force_inertia_timer = game.force_inertia_duration;
-
+	//this.is_collided = true;
+	
+	return
+	//this.force_inertia_timer = game.force_inertia_duration;
+/*
 	var other_velocity = {};
 
 	var angle_to_other = Math.atan2(next_pos.y - other.y, next_pos.x - other.x);
@@ -203,19 +150,34 @@ Player.prototype.collide = function (next_pos, other)
 	this.pulse_timer = 0;
 
 	return other_velocity;
+*/
 }
 
-Player.prototype.check_distances = function (x, y)
+Player.prototype.check_limits = function (next_pos)
 {
-	var next_pos = { x: x, y: y };
+	if (next_pos.y < game.world_hard_limits.y || next_pos.y > game.world_hard_limits.h)
+	{
+		this.velocity.y *= -1;
+		this.is_collided = true;
+	}
+	if (next_pos.x < game.world_hard_limits.x || next_pos.x > game.world_hard_limits.w)
+	{
+		this.velocity.x *= -1;
+		this.is_collided = true;
+	}
+}
 
+Player.prototype.check_distances = function (next_pos)
+{
 	for (var i = game.satellites.length; i--;)
 	{
-		var d = dist_xy_sqrt(game.satellites[i], next_pos);
+		var d = next_pos.get_dist_sqr(game.satellites[i].pos);
 
 		if (d < game.view_dist_sqrt) // visible
 		{
-			game.satellites[i].set_visible(x, y);
+			game.satellites[i].set_visible(next_pos.x, next_pos.y);
+			
+			this.fall_to(game.satellites[i]);
 
 			if (d < game.satellites[i].trigger_and_player_radius_sqrt)
 			{
@@ -231,11 +193,13 @@ Player.prototype.check_distances = function (x, y)
 	
 	for (var i = game.planets.length; i--;)
 	{
-		var d = dist_xy_sqrt(game.planets[i], next_pos);
+		var d = next_pos.get_dist_sqr(game.planets[i].pos);
 
 		if (d < game.view_dist_sqrt) // visible
 		{
-			game.planets[i].set_visible(x, y);
+			game.planets[i].set_visible(next_pos.x, next_pos.y);
+
+			this.fall_to(game.planets[i]);
 
 			if (d < game.planets[i].trigger_and_player_radius_sqrt)
 			{
@@ -251,11 +215,13 @@ Player.prototype.check_distances = function (x, y)
 	
 	for (var i = game.meteors.length; i--;)
 	{
-		var d = dist_xy_sqrt(game.meteors[i], next_pos);
+		var d = next_pos.get_dist_sqr(game.meteors[i].pos);
 
 		if (d < game.view_dist_sqrt) // visible
 		{
-			game.meteors[i].set_visible(x, y);
+			game.meteors[i].set_visible(next_pos.x, next_pos.y);
+
+			this.fall_to(game.meteors[i]);
 
 			if (d < game.meteors[i].collider_and_player_radius_sqrt)
 			{
@@ -265,12 +231,25 @@ Player.prototype.check_distances = function (x, y)
 	}
 }
 
+Player.prototype.fall_to = function (other)
+{
+	var dir = other.pos.clone().sub(this.pos);
+	var strength = (other.collider_radius / this.collider_radius) / dir.get_length();
+	this.velocity.add(dir.normalize().scale(strength* game.deltatime * this.fall_speed));
+}
+
 Player.prototype.pulse = function ()
 {
-	if (this.can_pulse && this.pulse_timer == 0)
+	//if (this.can_pulse || this.pulse_timer == 0)
+	if (this.can_pulse)
 	{
 		this.can_pulse = false;
-		this.pulse_timer = this.pulse_duration;
+		//this.pulse_timer = this.pulse_duration;
+		//this.pulse_timer = this.pulse_interval;
+
+		this.dir.from_angle(Math.atan2(game.mouse.y - game.hH, game.mouse.x - game.hW));
+
+		this.velocity.add(this.dir.scale(this.pulse_strength));
 	}
 }
 

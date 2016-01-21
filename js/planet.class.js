@@ -6,15 +6,12 @@ function Planet (id, sprite, x, y, was_discovered, collider_radius, trigger_radi
 
 	this.xp_value = 400;
 	this.bounciness = 0.1;
-	this.speed = 0;
-	this.dir = 0;
 	
 	// ---- props ---- //
 
 	this.id = id;
 	this.sprite = sprite;
-	this.x = x;
-	this.y = y;
+	this.pos = new Vector2(x, y);
 	this.discovered = was_discovered;
 	this.screen_x = 0;
 	this.screen_y = 0;
@@ -27,8 +24,8 @@ function Planet (id, sprite, x, y, was_discovered, collider_radius, trigger_radi
 Planet.prototype.set_visible = function (player_x, player_y)
 {
 	game.visible_obj[game.visible_obj.length] = this;
-	this.screen_x = game.hW + (this.x - player_x);
-	this.screen_y = game.hH + (this.y - player_y);
+	this.screen_x = game.hW + (this.pos.x - player_x);
+	this.screen_y = game.hH + (this.pos.y - player_y);
 }
 
 Planet.prototype.discover = function ()
