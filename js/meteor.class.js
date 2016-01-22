@@ -41,9 +41,9 @@ Meteor.prototype.move = function ()
 	}
 }
 
-Meteor.prototype.push = function (vec)
+Meteor.prototype.push = function (vec, speed)
 {
-	this.velocity.add(vec);
+	this.velocity.add(vec).normalize().scale(speed);
 }
 
 Meteor.prototype.set_visible = function (player_x, player_y)

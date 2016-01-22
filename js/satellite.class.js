@@ -8,7 +8,7 @@ function Satellite (id, planet, speed, sprite, r, theta, was_discovered, collide
 
 	// ---- config ---- //
 
-	this.bounciness = 0.8;
+	this.bounciness = 0.9;
 	this.xp_value = 200;
 	this.speed = speed;
 	this.planet = planet;
@@ -23,12 +23,12 @@ Satellite.prototype.move = function ()
 	this.pos.y = this.planet.pos.y + this.r * Math.sin(this.theta);
 }
 
-Satellite.prototype.push = function (vec)
+Satellite.prototype.push = function (vec, speed)
 {
 	var old_dir = this.velocity.get_angle();
 
 	this.velocity.add(vec);
-	this.speed = (this.velocity.get_length() / this.r) * (angle_interval(old_dir, this.velocity.get_angle()) > Math.PI * 0.5 ? -1 : 1);
+	this.speed = (speed / this.r) * (angle_interval(old_dir, this.velocity.get_angle()) > Math.PI * 0.5 ? -1 : 1);
 }
 
 Satellite.prototype.set_visible = function (player_x, player_y)

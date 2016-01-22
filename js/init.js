@@ -9,7 +9,7 @@ function init ()
 		H: visible_canvas.height = innerHeight,
 		SPEED_CHOICE: 1,
 		RESIST_CHOICE: 2,
-		MASS_EFFECT: 0.03, // to scale the mass of objects
+		SPACE_FRICTION: 1 - 0.0001,
 		visible_ctx: visible_canvas.getContext("2d"),
 		visible_obj: [],
 		planets: [],
