@@ -24,7 +24,7 @@ function loop_index (index, length) {
 
 function angle_interval (a, b) {
 	var d = Math.abs(b - a);
-	return d > Math.PI ? Math.PI - (d % Math.PI) : d
+	return d > Math.PI ? Math.PI - (d % Math.PI) : d;
 }
 
 function sum () {

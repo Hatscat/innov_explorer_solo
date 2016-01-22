@@ -2,11 +2,11 @@
 
 function Meteor (sprite, x, y, dir, speed, collider_radius)
 {
-	this.bounciness = 0.03;
+	this.bounciness = 0.8;
 
 	this.sprite = sprite;
 	this.pos = new Vector2(x, y);
-	this.velocity = new Vector2(0, 0).from_angle(dir).scale(speed);
+	this.velocity = new Vector2().from_angle(dir).scale(speed);
 	this.screen_x = 0;
 	this.screen_y = 0;
 	this.collider_radius = collider_radius;
@@ -15,29 +15,35 @@ function Meteor (sprite, x, y, dir, speed, collider_radius)
 
 Meteor.prototype.move = function ()
 {
-	var x = this.pos.x;
-	var y = this.pos.y;
-	var too_far = false;
+	this.pos.x += this.velocity.x * game.deltatime;
+	this.pos.y += this.velocity.y * game.deltatime;
 
-	x += this.velocity.x * game.deltatime;
-	y += this.velocity.y * game.deltatime;
-
-	if (x < game.world_hard_limits.x || x > game.world_hard_limits.w)
+	if (this.pos.x < game.world_hard_limits.x)
 	{
+		this.pos.x = game.world_hard_limits.x;
 		this.velocity.x *= -1;
-		too_far = true;
 	}
-	if (y < game.world_hard_limits.y || y > game.world_hard_limits.h)
+	else if (this.pos.x > game.world_hard_limits.w)
 	{
+		this.pos.x = game.world_hard_limits.w;
+		this.velocity.x *= -1;
+	}
+
+	if (this.pos.y < game.world_hard_limits.y)
+	{
+		this.pos.y = game.world_hard_limits.y;
 		this.velocity.y *= -1;
-		too_far = true;
 	}
-	
-	if (!too_far)
+	else if (this.pos.y > game.world_hard_limits.h)
 	{
-		this.pos.x = x; 
-		this.pos.y = y; 
+		this.pos.y = game.world_hard_limits.h;
+		this.velocity.y *= -1;
 	}
+}
+
+Meteor.prototype.push = function (vec)
+{
+	this.velocity.add(vec);
 }
 
 Meteor.prototype.set_visible = function (player_x, player_y)

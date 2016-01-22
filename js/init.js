@@ -9,20 +9,21 @@ function init ()
 		H: visible_canvas.height = innerHeight,
 		SPEED_CHOICE: 1,
 		RESIST_CHOICE: 2,
+		MASS_EFFECT: 0.03, // to scale the mass of objects
 		visible_ctx: visible_canvas.getContext("2d"),
 		visible_obj: [],
 		planets: [],
 		satellites: [],
 		meteors: [],
-		meteors_nb: 1024,
+		meteors_nb: 3000,
 		mouse: {
 			x: 0,
 			y: 0,
 			is_down: false
 		},
 		world_edges: {
-			w: 64000, // at least 3 * innerWidth
-			h: 32000 // at least 3 * innerHeight
+			w: 50000, // at least 3 * innerWidth
+			h: 30000 // at least 3 * innerHeight
 		},
 		
 		larger_visible_radius: 512,
@@ -164,8 +165,9 @@ function init_planets (n, m)
 			ctx.fill();
 
 			var id = '' + i + ii;
+			var R = r + rr * 2 + Math.random() * rr * 3;
 
-			game.satellites[game.satellites.length] = new Satellite(id, p, Math.max(0.05, Math.random()) * sat_dir, cc, r + rr * 2 + Math.random() * rr * 3, Math.random() * Math.PI * 2, discovered_planets.indexOf(id) != -1, rr, rr * 1.5);
+			game.satellites[game.satellites.length] = new Satellite(id, p, Math.max(0.05, Math.random()) / R * sat_dir, cc, R, Math.random() * Math.PI * 2, discovered_planets.indexOf(id) != -1, rr, rr * 1.5);
 		}
 	}
 }

@@ -29,12 +29,10 @@ function update (t)
 
 		// ---- player ---- //
 
-		//game.player.update_pulse();
 		game.player.update_hp();
 		
 		var next_pos = game.player.get_next_pos();
 		
-		game.player.check_limits(next_pos);
 		game.player.check_distances(next_pos);
 
 		if (!game.player.is_collided)
@@ -43,5 +41,8 @@ function update (t)
 		}
 		
 		game.player.is_collided = false;
+	
+		game.player.check_limits();
 	}
 }
+
