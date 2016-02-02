@@ -8,7 +8,7 @@ function Satellite (id, planet, speed, sprite, r, theta, was_discovered, collide
 
 	// ---- config ---- //
 
-	this.bounciness = 0.9;
+	this.bounciness = 0.8;
 	this.xp_value = 200;
 	this.speed = speed;
 	this.planet = planet;
@@ -35,7 +35,7 @@ Satellite.prototype.set_visible = function (player_x, player_y)
 {
 	Planet.prototype.set_visible.call(this, player_x, player_y);
 
-	this.velocity.from_angle(this.theta + Math.PI * sign(this.speed)).scale(this.speed * this.r);
+	this.velocity.from_angle(this.theta + (Math.PI * 0.5) * sign(this.speed)).scale(this.speed * this.r);
 }
 
 Satellite.prototype.discover = function ()

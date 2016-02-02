@@ -4,16 +4,19 @@ function Player (x, y)
 {
 	// ---- config ---- //
 	
-	this.pulse_strength = 0.3;
+	this.pulse_strength = 1;
+	this.default_speed_min = 0.01;
+	this.default_speed_max = 0.05;
 	this.speed_upgrade_k_max = 4;
-	this.fall_speed = 0.01;
+	this.fall_speed = 0.007;
 	this.collider_radius = 24;
 	this.upgrades_length = 4;
 	this.hp_max = 50;
 	this.hp_upgrade_k_max = 4;
-	this.hp_regen = 0.00003; // * hp_max * deltatime
+	this.hp_regen = 0.0001; // * hp_max * deltatime
 	this.hp_dot = 0.0005;
 	this.xp_max = 20000;
+	this.speed_min_sqr = 0.2;
 
 	// ---- props ---- //
 
@@ -73,8 +76,26 @@ Player.prototype.get_hp_ratio = function ()
 
 Player.prototype.get_next_pos = function ()
 {
-	this.velocity.scale(game.SPACE_FRICTION);
-	return this.pos.clone().add(this.velocity.clone().scale(this.speed_upgrade_k * game.deltatime));
+	this.dir.from_angle(Math.atan2(game.mouse.y - game.hH, game.mouse.x - game.hW));
+
+	if (game.propulsion_mode == game.PROPULSION_PUNCTUAL)
+	{
+		if (this.velocity.get_length_sqr() > this.speed_min_sqr)
+		{
+			this.velocity.scale(game.SPACE_FRICTION);
+		}
+		return this.pos.clone().add(this.velocity.clone().scale(game.deltatime));
+	}
+	else if (game.propulsion_mode == game.PROPULSION_CONTINUES)
+	{
+		this.velocity.scale(game.SPACE_FRICTION);
+		
+		var speed = lerp(this.default_speed_min, this.default_speed_max, dist_xy_sqr(game.mouse, { x: game.hW, y: game.hH }) / (game.hW * game.hW + game.hH * game.hH));
+
+		this.velocity.add(this.dir.clone().scale(speed * this.speed_upgrade_k));
+
+		return this.pos.clone().add(this.velocity.clone().scale(game.deltatime));
+	}
 }
 
 Player.prototype.update_hp = function ()
@@ -115,25 +136,31 @@ Player.prototype.collide = function (next_pos, other)
 {
 	this.is_collided = true;
 
-	var total_energy = (this.velocity.get_length() * this.collider_radius + other.velocity.get_length() * other.collider_radius) * (other.bounciness || 1);
+	var total_r = this.collider_radius + other.collider_radius;
+	// smoothness
+	var smooth_k = 0.333;
+	var player_mass = lerp(smooth_k, 1 - smooth_k, this.collider_radius / total_r) * this.collider_radius;
+	var other_mass = lerp(smooth_k, 1 - smooth_k, other.collider_radius / total_r) * other.collider_radius;
 
-	var player_energy = total_energy * (other.collider_radius / (this.collider_radius + other.collider_radius));
-	var player_speed = player_energy / this.collider_radius;
+	var total_energy = (this.velocity.get_length() * player_mass + other.velocity.get_length() * other_mass) * (other.bounciness || 1);
+
+	var player_energy = total_energy * (other_mass / (player_mass + other_mass));
+	var player_speed = player_energy / player_mass;
 
 	var other_energy = total_energy - player_energy;
 	var angle_to_other = Math.atan2(next_pos.y - other.pos.y, next_pos.x - other.pos.x);
 
-	var v1 = this.velocity.clone().scale(this.collider_radius);
-	var v2 = other.velocity.clone().scale(other.collider_radius);
+	var v1 = this.velocity.clone().scale(player_mass);
+	var v2 = other.velocity.clone().scale(other_mass);
 
 	this.velocity.add(new Vector2().from_angle(angle_to_other).scale(player_energy)).normalize().scale(player_speed);
 
 	if (other.push != null)
 	{
-		other.push(new Vector2().from_angle(angle_to_other + Math.PI).scale(other_energy), other_energy / other.collider_radius);
+		other.push(new Vector2().from_angle(angle_to_other + Math.PI).scale(other_energy), other_energy / other_mass);
 	}
 
-	this.take_damage((other.collider_radius / this.collider_radius) * player_speed);
+	//this.take_damage((other_mass / player_mass) * player_speed);
 }
 
 Player.prototype.check_limits = function ()
@@ -163,9 +190,18 @@ Player.prototype.check_limits = function ()
 
 Player.prototype.check_distances = function (next_pos)
 {
+	var min_d = Number.MAX_VALUE;
+	var nearest_pos = null;
+
 	for (var i = game.satellites.length; i--;)
 	{
 		var d = next_pos.get_dist_sqr(game.satellites[i].pos);
+
+		if (d < min_d)
+		{
+			min_d = d;
+			nearest_pos = game.satellites[i].pos; // warning: ref, no copy
+		}
 
 		if (d < game.view_dist_sqrt) // visible
 		{
@@ -189,6 +225,12 @@ Player.prototype.check_distances = function (next_pos)
 	{
 		var d = next_pos.get_dist_sqr(game.planets[i].pos);
 
+		if (d < min_d)
+		{
+			min_d = d;
+			nearest_pos = game.planets[i].pos; // warning: ref, no copy
+		}
+
 		if (d < game.view_dist_sqrt) // visible
 		{
 			game.planets[i].set_visible(next_pos.x, next_pos.y);
@@ -206,6 +248,8 @@ Player.prototype.check_distances = function (next_pos)
 			}
 		}
 	}
+
+	game.vec_to_nearest_uncharted = nearest_pos.clone().sub(next_pos); // dir to nearest
 
 	for (var i = game.meteors.length; i--;)
 	{
@@ -238,9 +282,7 @@ Player.prototype.pulse = function ()
 	{
 		this.can_pulse = false;
 
-		this.dir.from_angle(Math.atan2(game.mouse.y - game.hH, game.mouse.x - game.hW));
-
-		this.velocity.add(this.dir.scale(this.pulse_strength));
+		this.velocity.add(this.dir.scale(this.pulse_strength * this.speed_upgrade_k));
 	}
 }
 

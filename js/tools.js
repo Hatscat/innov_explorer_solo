@@ -22,7 +22,7 @@ function loop_index (index, length) {
 	return (length + (index % length)) % length;
 }
 
-function angle_interval (a, b) {
+function angle_interval (a, b) { // angles from 0 to Math.PI * 2
 	var d = Math.abs(b - a);
 	return d > Math.PI ? Math.PI - (d % Math.PI) : d;
 }

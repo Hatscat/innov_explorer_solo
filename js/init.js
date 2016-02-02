@@ -7,9 +7,11 @@ function init ()
 	window.game = {
 		W: visible_canvas.width = innerWidth,
 		H: visible_canvas.height = innerHeight,
+		PROPULSION_CONTINUES: 1,
+		PROPULSION_PUNCTUAL: 2,
 		SPEED_CHOICE: 1,
 		RESIST_CHOICE: 2,
-		SPACE_FRICTION: 1 - 0.0001,
+		SPACE_FRICTION: 1 - 0.025,
 		visible_ctx: visible_canvas.getContext("2d"),
 		visible_obj: [],
 		planets: [],
@@ -25,7 +27,7 @@ function init ()
 			w: 50000, // at least 3 * innerWidth
 			h: 30000 // at least 3 * innerHeight
 		},
-		
+		vec_to_nearest_uncharted: new Vector2(),
 		larger_visible_radius: 512,
 		force_inertia_duration: 1000, // ms
 		deltatime: 1,
@@ -37,6 +39,9 @@ function init ()
 		storage.init(); // reset
 	}
 	storage.load();
+
+	game.propulsion_mode = game.PROPULSION_PUNCTUAL;
+	game.propulsion_mode = game.PROPULSION_CONTINUES;
 
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;

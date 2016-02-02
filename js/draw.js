@@ -9,7 +9,7 @@ function draw ()
 	game.buffer_ctx.fillStyle = "#000";
 	game.buffer_ctx.fillRect(0, 0, game.W, game.H);
 
-	for (var i = game.bgs.length; i--;)
+	for (var i = 0; i < game.bgs.length; ++i)
 	{
 		var speed = lerp(game.bg_speed_min, game.bg_speed_max, i / (game.bgs.length - 1));
 		var x = -game.player.pos.x * speed % game.bgs[i].width;
