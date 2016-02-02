@@ -24,6 +24,8 @@ function init ()
 			is_down: false
 		},
 		world_edges: {
+			x: 10000,
+			y: 10000,
 			w: 50000, // at least 3 * innerWidth
 			h: 30000 // at least 3 * innerHeight
 		},
@@ -46,10 +48,10 @@ function init ()
 	game.hW = game.W >> 1;
 	game.hH =  game.H >> 1;
 	game.world_hard_limits = {
-		x: game.world_edges.w * -0.3,
-		y: game.world_edges.h * -0.3,
-		w: game.world_edges.w * 1.3,
-		h: game.world_edges.h * 1.3
+		x: 0,
+		y: 0,
+		w: game.world_edges.w + game.world_edges.x,
+		h: game.world_edges.h + game.world_edges.y
 	};
 
 	var visible_w = game.hW + game.larger_visible_radius;
@@ -58,7 +60,7 @@ function init ()
 	game.view_dist_sqrt = visible_w * visible_w + visible_h * visible_h;
 	game.buffer_canvas = visible_canvas.cloneNode();
 	game.buffer_ctx = game.buffer_canvas.getContext("2d");
-	game.player = new Player(game.world_edges.w >> 1, game.world_edges.h >> 1);
+	game.player = new Player(game.world_edges.x + game.world_edges.w >> 1, game.world_edges.y + game.world_edges.h >> 1);
 	game.bgs = create_stars_bgs([ 1024, 512, 256, 64 ]);
 	game.bg_speed_min = 0.3;
 	game.bg_speed_max = 0.7;
@@ -132,7 +134,7 @@ function init_meteors (n)
 		ctx.arc(r, r, r, 0, Math.PI*2);
 		ctx.fill();
 
-		game.meteors[game.meteors.length] = new Meteor(c, r + Math.random() * (game.world_edges.w), r + Math.random() * (game.world_edges.w), Math.random() * Math.PI * 2, 0.2 + Math.random(), r);
+		game.meteors[game.meteors.length] = new Meteor(c, game.world_edges.x + r + Math.random() * (game.world_edges.w), game.world_edges.y + r + Math.random() * (game.world_edges.h), Math.random() * Math.PI * 2, 0.2 + Math.random(), r);
 	}
 }
 
@@ -152,7 +154,7 @@ function init_planets (n, m)
 		ctx.arc(r, r, r, 0, Math.PI*2);
 		ctx.fill();
 
-		var p = new Planet(i, c, game.W + Math.random() * (game.world_edges.w), game.H + Math.random() * (game.world_edges.h ), discovered_planets.indexOf(i) != -1, r, r * 1.5);
+		var p = new Planet(i, c, game.world_edges.x + Math.random() * (game.world_edges.w), game.world_edges.y + Math.random() * (game.world_edges.h ), discovered_planets.indexOf(i) != -1, r, r * 1.5);
 
 		game.planets[game.planets.length] = p;
 
