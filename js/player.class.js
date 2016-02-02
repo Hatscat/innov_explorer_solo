@@ -160,7 +160,7 @@ Player.prototype.collide = function (next_pos, other)
 		other.push(new Vector2().from_angle(angle_to_other + Math.PI).scale(other_energy), other_energy / other_mass);
 	}
 
-	//this.take_damage((other_mass / player_mass) * player_speed);
+	this.take_damage((other_mass / player_mass) * player_speed);
 }
 
 Player.prototype.check_limits = function ()
